@@ -84,7 +84,7 @@ public class Ted {
 		Reader reader = System.console().reader();
 		char command;
 
-		// Inizio turno di gioco
+		// Inizio turno di gioco 
 
 		while(true){
 			
