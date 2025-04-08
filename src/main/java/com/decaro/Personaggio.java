@@ -93,6 +93,7 @@ public class Personaggio {
 
 			case 'a':   if (this.getPosizione().getX() > 0)
                         this.getPosizione().setX(this.getPosizione().getX() -1);
+                    break;
 
 			case 's':   if (this.getPosizione().getY() < dimY -1)
                         this.getPosizione().setY(this.getPosizione().getY() +1);

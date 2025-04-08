@@ -1,7 +1,5 @@
 package com.decaro;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.Random;
 
 public class Ted {
@@ -83,20 +81,31 @@ public class Ted {
 		
 		char command;
 
-		// Inizio turno di gioco 
+		// turno di gioco 
+		// 1. Pulire lo schermo
+		// 2. Pulire la mappa
+		// 3. Far muovere il mago
+		// 4. Verificare la presenza dei nemici: nel caso combattere
+		// 5. Verificare la presenza di cibo: nel caso decidere se mangiare
+		// 6. Verificare la presenza di pozioni: nel caso decidere di berle
+		// 7. Muovere i nemici
+		// 8. Attende che il giocatore sia pronto pert il nuovo turno
 
 		while(true){
-			
+
+			// 1. Pulisci
 			System.out.print("\033[H\033[2J");
 			System.out.flush();
+
+			// 2. Mappa
 			disegnaMappa();
 
+			// 3. Si muove
 			System.out.print(":>");
-
-				command = System.console().readLine().charAt(0);
-			
+			command = System.console().readLine().charAt(0);
 			M.siMuove(command, Ted.MX, Ted.MY);
 
+			// 4. Nemici
 			for (int i = 0; i < nemici.length; i++){
 				if (nemici[i].getPosizione().equals(M.getPosizione())){
 					System.out.println("Hai incontrato il nemico " + nemici[i].getNome());
@@ -116,6 +125,10 @@ public class Ted {
 						if(nemici[i].getVita() <= 0){
 							System.out.println("Il nemico è morto!");
 							nemici[i].setPosizione(new Posizione (-1, -1));
+							if (haiVinto()){
+								System.out.println("Hai vinto! Congrats");
+								return;
+							}
 						}
 					}
 					if (nemici[i].getVita() > 0);{
@@ -130,13 +143,92 @@ public class Ted {
 						}
 					}
 
+					// 7. Attende
 					System.out.println("Premi invio per continuare...");
 					System.console().readLine();
 				}
 			}
+
+			// 5. Cibo
+			for (int i = 0; i < cibi.length; i++){
+				if (cibi[i].getPosizione().equals(M.getPosizione())){
+					System.out.println("Hai trovato una " + cibi[i].getNome() + "!");
+					System.out.println("Vuoi mangiarla? (s/n)");
+					System.out.print(":>");
+					command = System.console().readLine().charAt(0);
+					if (command == 's'){
+						M.mangia(cibi[i]);
+						cibi[i].setPosizione(new Posizione(-2, -2));
+					}
+
+					// 7. Attende
+					System.out.println("Premi invio per continuare...");
+					System.console().readLine();
+				}
+			}
+
+			// 6. Pozioni
+			for (int i = 0; i < pozioni.length; i++){
+				if (pozioni[i].getPosizione().equals(M.getPosizione())){
+					System.out.println("Hai trovato una " + pozioni[i].getNome() + "!");
+					System.out.println("Vuoi berla? (s/n)");
+					System.out.print(":>");
+					command = System.console().readLine().charAt(0);
+					if (command == 's'){
+						M.bevePozione(pozioni[i]);
+						pozioni[i].setPosizione(new Posizione(-3, -3));
+					}
+
+					// 8. Attende
+					System.out.println("Premi invio per continuare...");
+					System.console().readLine();
+				}
+			}
+
+			// 7. Movimento nemico
+			for (int i = 0; i < nemici.length; i++){
+				if (!nemici[i].getPosizione().equals(new Posizione(-1, -1))){
+
+					int mov = r.nextInt(4);
+					switch(mov){
+
+						case 0: nemici[i].siMuove('w', MX, MY);
+							break;
+
+						case 1: nemici[i].siMuove('a', MX, MY);
+							break;
+
+						case 2: nemici[i].siMuove('s', MX, MY);
+							break;
+
+						case 3: nemici[i].siMuove('d', MX, MY);
+							break;
+					}
+				}
+			}
+
+			stampaStato();
 		}
-		 
+
 	}// End main()
+
+	// Debug: stampa lo stato di tutti i vettori e del mago
+	public static void stampaStato(){
+				
+		System.out.println("Stato del mago: " + M.toString());
+		System.out.println("Stato dei cibi: ");
+		for (int i = 0; i < cibi.length; i++){
+			System.out.println(cibi[i].toString());
+		}
+		System.out.println("Stato delle pozioni: ");
+		for (int i = 0; i < pozioni.length; i++){
+			System.out.println(pozioni[i].toString());
+		}
+		System.out.println("Stato dei nemici: ");
+		for (int i = 0; i < nemici.length; i++){
+			System.out.println(nemici[i].toString());
+		}
+	}
 
 	static void disegnaMappa(){
 
@@ -179,8 +271,20 @@ public class Ted {
 			System.out.println("");
 		}
 
+	}
 
+	public static boolean haiVinto(){
+
+		boolean vittoria = true;
+		for (int i = 0; i < nemici.length; i++){
+
+			if (!nemici[i].getPosizione().equals(new Posizione(-1, -1))){
+				vittoria = false;
+			}
+		}
+		return vittoria;
 	}
 
 
 } // End class Ted
+
