@@ -1,6 +1,13 @@
 package com.decaro;
 
+import java.io.IOException;
 import java.util.Random;
+import java.io.File;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+
 
 public class Ted {
 
@@ -48,6 +55,15 @@ public class Ted {
 		} while (M == null); //Ciclo finchè non viene creato il personaggio
 
 		System.out.println("Hai creato il tuo personaggio:" + M.getNome());
+
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectWriter ow = mapper.writerWithDefaultPrettyPrinter();
+
+		try {	
+			ow.writeValue(new File("m.json"), M);
+		}catch (IOException e) {
+			System.out.println("Non ho potuto salvare il file!");
+		}
 
 		Random r = new Random();
 
